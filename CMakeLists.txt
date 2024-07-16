@@ -90,7 +90,10 @@ target_link_libraries(
 
 add_executable(
     variable_impedance_energy_tank
-    src/variable_impedance_energy_tank.cpp
+    src/variable_impedance_energy_tank/main.cpp
+    src/variable_impedance_energy_tank/algorithm.cpp
+    src/variable_impedance_energy_tank/parameters.cpp
+    src/variable_impedance_energy_tank/getters.cpp
 )
 target_link_libraries(
     variable_impedance_energy_tank

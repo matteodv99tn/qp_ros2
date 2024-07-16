@@ -60,6 +60,9 @@ private:
 
     void   on_tank_update();
     double tank_energy() const;
+
+    void declare_node_parameters();
+    void initialise_node_parameters();
 };
 
 }  // namespace qp_ros2
