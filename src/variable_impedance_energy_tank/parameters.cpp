@@ -62,6 +62,7 @@ VariableImpedanceWithEnergyTank::declare_node_parameters() {
     declare_parameter("tank_minimum_energy", 0.5);
     declare_parameter("tank_maximum_position_power_outflow", -0.5);
     declare_parameter("tank_maximum_orientation_power_outflow", -0.5);
+    declare_parameter("tank_prefix", "/energy_tank");
 }
 
 void
@@ -87,6 +88,7 @@ VariableImpedanceWithEnergyTank::initialise_node_parameters() {
             get_parameter("tank_maximum_position_power_outflow").as_double();
     const double rho_ori =
             get_parameter("tank_maximum_orientation_power_outflow").as_double();
+    const std::string tank_prefix = get_parameter("tank_prefix").as_string();
 
     double    dt          = get_parameter("sampling_period").as_double();
     RealVec_t kmin_coeffs = get_parameter("minimum_stiffness").as_double_array();
@@ -292,4 +294,31 @@ VariableImpedanceWithEnergyTank::initialise_node_parameters() {
     RCLCPP_INFO(
             get_logger(), "Maximum power outflow from orietnation part: %f", _rho_ori
     );
+
+    const std::string tank_state_topic = tank_prefix + "/state";
+    RCLCPP_INFO(
+            get_logger(),
+            "Logging energy tank state in topic %s",
+            tank_state_topic.c_str()
+    );
+    _tank_state_publisher =
+            create_publisher<Float64>(tank_state_topic, rclcpp::QoS(10));
+
+    const std::string tank_power_topic = tank_prefix + "/power";
+    RCLCPP_INFO(
+            get_logger(),
+            "Logging energy tank power in topic %s",
+            tank_power_topic.c_str()
+    );
+    _tank_power_publisher =
+            create_publisher<Float64>(tank_power_topic, rclcpp::QoS(10));
+
+    const std::string tank_energy_topic = tank_prefix + "/energy";
+    RCLCPP_INFO(
+            get_logger(),
+            "Logging energy tank energy in topic %s",
+            tank_energy_topic.c_str()
+    );
+    _tank_energy_publisher =
+            create_publisher<Float64>(tank_energy_topic, rclcpp::QoS(10));
 }

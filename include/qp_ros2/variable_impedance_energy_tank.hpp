@@ -5,7 +5,7 @@
 #include <tf2_ros/transform_listener.h>
 
 #include <rclcpp/node.hpp>
-#include <std_msgs/msg/detail/float64_multi_array__struct.hpp>
+#include <std_msgs/msg/float64.hpp>
 #include <std_msgs/msg/float64_multi_array.hpp>
 
 #include "qp_ros2/helpers/listeners.hpp"
@@ -19,6 +19,8 @@ public:
     VariableImpedanceWithEnergyTank();
 
 private:
+    using Float64MultiArray = std_msgs::msg::Float64MultiArray;
+    using Float64           = std_msgs::msg::Float64;
     QpWrapper<6, 9> _qp;
 
     std::unique_ptr<PoseStampedListener>   _desired_pos;
@@ -31,8 +33,12 @@ private:
     tf2_ros::Buffer::SharedPtr                  _tf_buffer;
     std::unique_ptr<tf2_ros::TransformListener> _tf_listener;
 
-    rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr _stiffness_publisher;
-    std_msgs::msg::Float64MultiArray                               _stiffness_msg;
+    rclcpp::Publisher<Float64MultiArray>::SharedPtr _stiffness_publisher;
+    Float64MultiArray                               _stiffness_msg;
+
+    rclcpp::Publisher<Float64>::SharedPtr _tank_state_publisher;
+    rclcpp::Publisher<Float64>::SharedPtr _tank_power_publisher;
+    rclcpp::Publisher<Float64>::SharedPtr _tank_energy_publisher;
 
     double                       _dt;
     rclcpp::TimerBase::SharedPtr _qp_timer;
@@ -42,6 +48,7 @@ private:
     Mat6_t _Q, _R;
 
     double _x_tank;
+    double _dx_dt_tank;
     double _T_sigma_th;
     double _T_min;
     double _rho_pos;
@@ -63,6 +70,8 @@ private:
 
     void declare_node_parameters();
     void initialise_node_parameters();
+
+    void log_parameters();
 };
 
 }  // namespace qp_ros2

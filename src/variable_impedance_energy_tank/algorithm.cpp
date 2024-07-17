@@ -50,6 +50,9 @@ VariableImpedanceWithEnergyTank::VariableImpedanceWithEnergyTank() :
         _tf_listener(nullptr),
         _stiffness_publisher(nullptr),
         _stiffness_msg(),
+        _tank_state_publisher(nullptr),
+        _tank_power_publisher(nullptr),
+        _tank_energy_publisher(nullptr),
         _dt(0.0),
         _Kmin_diag(Vec6_t::Zero()),
         _Kmax_diag(Vec6_t::Zero()),
@@ -61,6 +64,7 @@ VariableImpedanceWithEnergyTank::VariableImpedanceWithEnergyTank() :
         _Q(Mat6_t::Zero()),
         _R(Mat6_t::Zero()),
         _x_tank(0),
+        _dx_dt_tank(0),
         _T_sigma_th(0),
         _T_min(0.0),
         _rho_pos(0.0),
@@ -155,10 +159,8 @@ VariableImpedanceWithEnergyTank::on_tank_update() {
     const Vec6_t w         = (T < _T_min) ? Vec6_t(-Kvar() * x_tilde) : Vec6_t::Zero();
     const double dx_tank_1 = sigma * xd_tilde.transpose() * Damp() * xd_tilde;
     const double dx_tank_2 = -w.transpose() * xd_tilde;
-    const double dx_tank   = (dx_tank_1 + dx_tank_2) / _x_tank;
-    _x_tank += dx_tank * _dt;
+    _dx_dt_tank            = (dx_tank_1 + dx_tank_2) / _x_tank;
+    _x_tank += _dx_dt_tank * _dt;
 
-    assert(_stiffness_publisher != nullptr);
-    for (long i = 0; i < 6; ++i) _stiffness_msg.data[i] = _Kmin_diag[i] + _Kvar_diag[i];
-    _stiffness_publisher->publish(_stiffness_msg);
+    log_parameters();
 }

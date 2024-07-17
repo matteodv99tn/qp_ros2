@@ -94,6 +94,7 @@ add_executable(
     src/variable_impedance_energy_tank/algorithm.cpp
     src/variable_impedance_energy_tank/parameters.cpp
     src/variable_impedance_energy_tank/getters.cpp
+    src/variable_impedance_energy_tank/loggers.cpp
 )
 target_link_libraries(
     variable_impedance_energy_tank
